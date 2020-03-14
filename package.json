@@ -1,11 +1,19 @@
 {
   "name": "hackernews",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "hackernews.js",
+  "bin": {
+    "hackernews": "hackernews.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "budo index.js",
+    "test": "node test.js",
+    "hackernews": "node hackernews.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
 }
