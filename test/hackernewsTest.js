@@ -60,6 +60,30 @@ describe("Hacker News Test", function() {
 
     describe('validateArg() Tests', function () {
         
+        it('validateArg(1) should return true', function() {
+            let result = hackernews.validateArg(1)
+            assert.deepEqual(result, true)
+        })
+
+        it('validateArg(100) should return true', function() {
+            let result = hackernews.validateArg(100)
+            assert.deepEqual(result, true)
+        })
+
+        it('validateArg(105) should return false', function() {
+            let result = hackernews.validateArg(105)
+            assert.deepEqual(result, false)
+        })
+
+        it('validateArg("n") should return false', function() {
+            let result = hackernews.validateArg('n')
+            assert.deepEqual(result, false)
+        })
+
+        it('validateArg(-10) should return false', function() {
+            let result = hackernews.validateArg(-10)
+            assert.deepEqual(result, false)
+        })
 
     })
 
