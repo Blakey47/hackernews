@@ -8,27 +8,38 @@ const commander = require('commander')      // Allows for custom input as requir
 // Calculates num of pages (n / 30), that'll need to be queried to return desired num of posts (numberOfStories), 
 // stores each value in array, which is then returned 
 const getPagesArray = (numberOfStories) => {
-    let numberOfPages = Math.ceil(numberOfStories / 30)
-    let pagesArray = []
-    for (i = 0; i < numberOfPages; i++) {
-        pagesArray.push(i + 1)
+    if (validateArg(numberOfStories) === true && typeof(numberOfStories) === "number") {
+        let numberOfPages = Math.ceil(numberOfStories / 30)
+        let pagesArray = []
+        for (i = 0; i < numberOfPages; i++) {
+            pagesArray.push(i + 1)
+        }
+        return pagesArray
+    } else if  (validateArg(numberOfStories) == false && typeof(numberOfStories) === "number"){
+        return "Please enter a number between 1 and 100"
+    } else {
+        return "Number of stories not valid input"
     }
-    return pagesArray
 }
 
 
 // Fetches data from `https://news.ycombinator.com/news?p=${page}` given the (page) input and returns the
 // response.text() in the form on html
 const getPageHTML = (page) => {
-    return fetch(`https://news.ycombinator.com/news?p=${page}`)
+    if (validatePage(page) === true) {
+        return fetch(`https://news.ycombinator.com/news?p=${page}`)
         .then(response => response.text())
+    } else {
+        console.log("Input is invalid")
+        process.exit()
+    }
 }
   
 
 // Returns the combined HTML from looping through the Array returned from getPagesArray while also
 // calling getPageHTML passing in each index of the array
 const getHTML = async (numberOfStories) => {
-    if (validateArg(numberOfStories) == true) {
+    if (validateArg(numberOfStories) === true) {
         return Promise.all(getPagesArray(numberOfStories).map(getPageHTML))
         .then(response => response.join(''))
     } else {
@@ -40,7 +51,7 @@ const getHTML = async (numberOfStories) => {
 
 // Takes in both the full rawHTML and posts needed to be returned, then using Cheerio, extracts the required info,
 // checking that the data is valid, and then sets this within the Story object. Once set, pushes the object onto
-// the stack if (stories.length < posts -1). Returns Stories []
+// the stack if (stories.length < posts). Returns Stories []
 const getStories = (rawHTML, posts) => {
     let stories = []
     let $ = cheerio.load(rawHTML)
@@ -65,7 +76,7 @@ const getStories = (rawHTML, posts) => {
             rank: validateRank(rank)
         }
 
-        if (stories.length < posts - 1) {
+        if (stories.length < posts) {
             stories.push(story)
         }
     })
@@ -79,7 +90,16 @@ const getStories = (rawHTML, posts) => {
 // Checking if the input value is between 1 and 100, which returns true - this will continue the script
 // If the value is great than 100 or less than 1, the script will exit
 const validateArg = (arg) => {
-    if (arg > 0 || arg <= 100) {
+    if (arg > 0 && arg <= 100) {
+        return true
+    } else {
+        return false
+    }
+}
+
+// Checking if page > 0 and < 5
+const validatePage = (page) => {
+    if (page > 0 && page < 5) {
         return true
     } else {
         return false
@@ -132,10 +152,22 @@ const validateInput = (input) => {
     }
 }
 
+module.exports = {
+    getPagesArray,
+    getPageHTML,
+    getHTML,
+    getStories,
+    validateArg,
+    validatePage,
+    validateURI,
+    validatePoints,
+    validateComments,
+    validateRank,
+    validateInput
+}
 
 // Commander fires off the script determined by the passed arguments
-commander.allowUnknownOption()
-    .option('--posts [value]', 'Number of posts', 30).action(args =>
+commander.allowUnknownOption().option('--posts [value]', 'Number of stories to display', 30).action(args =>
         getHTML(args.posts).then(rawHTML => 
             getStories(rawHTML, args.posts))
             .then(stories => {
