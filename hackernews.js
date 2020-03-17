@@ -8,7 +8,7 @@ const commander = require('commander')      // Allows for custom input as requir
 // Calculates num of pages (n / 30), that'll need to be queried to return desired num of posts (numberOfStories), 
 // stores each value in array, which is then returned 
 const getPagesArray = (numberOfStories) => {
-    if (validateArg(numberOfStories) === true && typeof(numberOfStories) === "number") {
+    if (validateArg(numberOfStories) === true) {
         let numberOfPages = Math.ceil(numberOfStories / 30)
         let pagesArray = []
         for (i = 0; i < numberOfPages; i++) {
@@ -18,7 +18,7 @@ const getPagesArray = (numberOfStories) => {
     } else if  (validateArg(numberOfStories) == false && typeof(numberOfStories) === "number"){
         return "Please enter a number between 1 and 100"
     } else {
-        return "Number of stories not valid input"
+        return "Number of stories not a valid number"
     }
 }
 
@@ -29,6 +29,10 @@ const getPageHTML = (page) => {
     if (validatePage(page) === true) {
         return fetch(`https://news.ycombinator.com/news?p=${page}`)
         .then(response => response.text())
+        .catch(error => {
+            console.log("\nFetch request has failed with error: \n\n" + error + "\n")
+            process.exit()
+        })
     } else {
         console.log("Input is invalid")
         process.exit()
@@ -56,6 +60,11 @@ const getStories = (rawHTML, posts) => {
     let stories = []
     let $ = cheerio.load(rawHTML)
 
+    if (posts.length > 3 || validateArg(posts[0]) === false) {
+        console.log("Please enter a value between 1 and 100")
+        process.exit()
+    }
+
     $('span.comhead').each(function() {
         let data = $(this).prev()
 
@@ -76,7 +85,7 @@ const getStories = (rawHTML, posts) => {
             rank: validateRank(rank)
         }
 
-        if (stories.length < posts) {
+        if (story.rank <= posts && validateArg(posts[0]) === true) {
             stories.push(story)
         }
     })
@@ -118,37 +127,39 @@ const validateURI = (uri) => {
 
 // Checking if points <= 0
 const validatePoints = (points) => {
-    if (parseInt(points) <= 0) {
-        return 0
-    } else {
+    if (parseInt(points) > 0  && typeof(parseInt(points)) === 'number') {
         return parseInt(points)
+    } else {
+        return 0
     }
 }
 
 // Checking if comments is <= 0
 const validateComments = (comments) => {
-    if (parseInt(comments) <= 0 || comments === 'discuss') {
-        return 0
-    } else {
+    if (parseInt(comments) > 0) {
         return parseInt(comments)
+    } else {
+        return 0
     }
 }
 
 // Checking if rank is <= 0
 const validateRank = (rank) => {
-    if (parseInt(rank) <= 0) {
-        return 0
-    } else {
+    if (parseInt(rank) > 0 && typeof(parseInt(rank)) === 'number') {
         return parseInt(rank)
+    } else {
+        return "Rank is not valid"
     }
 }
 
 // Checking if the input is between 0 and 256
 const validateInput = (input) => {
-    if (input.length > 0 && input.length < 256){
-      return input
+    if (input.length < 0 || input.length > 256){
+      return input.slice(0, 253) + "..."
+    } else if (typeof(input) != 'string'){
+      return ""
     } else {
-      return " -- Title either too short or too long."
+        return input
     }
 }
 
