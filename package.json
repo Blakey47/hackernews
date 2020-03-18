@@ -10,9 +10,10 @@
     "test": "test"
   },
   "scripts": {
-    "start": "budo index.js",
+    "start": "node hackernews.js",
     "test": "mocha || true",
-    "hackernews": "node hackernews.js"
+    "hackernews": "node hackernews.js",
+    "install-hackernews": "npm link && npm i -g"
   },
   "author": "",
   "license": "ISC",

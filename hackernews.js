@@ -46,6 +46,10 @@ const getHTML = async (numberOfStories) => {
     if (validateArg(numberOfStories) === true) {
         return Promise.all(getPagesArray(numberOfStories).map(getPageHTML))
         .then(response => response.join(''))
+        .catch(error => {
+            console.log(error)
+            process.exit()
+        })
     } else {
         console.log("Please enter a value between 1 and 100")
         process.exit()
@@ -55,7 +59,7 @@ const getHTML = async (numberOfStories) => {
 
 // Takes in both the full rawHTML and posts needed to be returned, then using Cheerio, extracts the required info,
 // checking that the data is valid, and then sets this within the Story object. Once set, pushes the object onto
-// the stack if (stories.length < posts). Returns Stories []
+// the stack if (story.rank <= posts && validateArg(posts[0]) === true). Returns Stories []
 const getStories = (rawHTML, posts) => {
     let stories = []
     let $ = cheerio.load(rawHTML)
