@@ -24,7 +24,7 @@ const getPagesArray = (numberOfStories) => {
 
 
 // Fetches data from `https://news.ycombinator.com/news?p=${page}` given the (page) input and returns the
-// response.text() in the form on html
+// response.text() in the form of html
 const getPageHTML = (page) => {
     if (validatePage(page) === true) {
         return fetch(`https://news.ycombinator.com/news?p=${page}`)
