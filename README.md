@@ -13,6 +13,8 @@ A  CLI web scraper built with Node.js that retrieves top stories from Y Combinat
 
 I had never worked with Node.js or any of these libraries before this challenge as I'm used to building scripts in Python while also having experience writing scripts with Swift. With that said, I decided to work with Node.js due to the requirements of the role and the emphasis on learning new technologies.
 
+Also, I had originally started work on retrieving the desired information via the API that is provided by Hacker News but it appears as though the returned JSON no longer provides a valid URI.
+
 ## Installation
 
 Within the directory of your choosing:
